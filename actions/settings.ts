@@ -8,7 +8,6 @@ import { generateVerificationToken } from "@/lib/tokens"
 import { SettingsSchema } from "@/schemas"
 import { z } from "zod"
 import bcrypt from "bcryptjs"
-import {update} from "@/auth"
 
 export const settings = async (
     values: z.infer<typeof SettingsSchema>
@@ -62,21 +61,12 @@ export const settings = async (
         values.newPassword = undefined
     }
 
-    const updateadUser = await db.user.update({
+    await db.user.update({
         where: {id: dbUser.id},
         data:{
             ...values
         }
     })
-
-    update({
-        user: {
-            name: updateadUser.name,
-            email: updateadUser.email,
-            isTwoFactorEnabled: updateadUser.isTwoFactorEnabled,
-            role: updateadUser.role,
-        }
-    });
 
     return {success: "Settings Updated!"}
 }
